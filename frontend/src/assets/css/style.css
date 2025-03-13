@@ -1,0 +1,268 @@
+/* ===== style.css ===== */
+
+/* RESET de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Corps de page */
+  body {
+    scroll-margin: auto;
+    margin-top: auto;
+    height: auto;
+    padding-top: 50px;
+    font-family: Arial, sans-serif;
+    background-color: #faf9f4; /* crème clair */
+    color: #333;
+    position: sticky; 
+    overflow-x: hidden; /* Pas de scroll horizontal inutile */
+  }
+  
+  /* Container principal */
+  .container {
+    max-width: auto;
+    height: auto;
+    margin-top: 200px;
+    margin: 100px ; /* On laisse un espace en haut */
+    background-color: #fff;
+    padding-top: 190px;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  /* Titres */
+  h1 {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  h2 {
+    margin-bottom: 16px;
+  }
+  
+  /* -------- MENU BURGER -------- */
+  .hamburger-menu {
+    position: fixed;      /* <-- Au lieu de absolute : reste fixé à l’écran */
+    top: 15px; 
+    left: 20px;
+    cursor: pointer;
+    user-select: none;
+    z-index: 1001; /* Au-dessus de la sidebar */
+  }
+  
+  /* Lignes du burger */
+  .hamburger-lines {
+    width: 30px;
+    height: 3px;
+    background-color: #fff; /* par défaut : noir */
+    margin: 6px 0;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Quand la sidebar est open, 
+     on veut les lignes en blanc */
+  .hamburger-menu.open .hamburger-lines {
+    background-color: #fff;
+  }
+  
+  /* -------- SIDEBAR -------- */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100vh;
+    max-height: 100%;
+    background-color: #333;
+    color: #fff;
+    transform: translateX(-220px); 
+    transition: transform 0.3s ease; 
+    z-index: 2000;
+  
+    /* On décale les boutons 
+       pour qu’ils ne soient pas
+       sous le burger. */
+    padding-top: 110px;
+  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Sidebar "ouverte" */
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  /* Boutons de la sidebar */
+  .sidebar button.sidebar-btn {
+    width: 80%;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    background-color: #444;
+    color: #fff;
+    cursor: pointer;
+    display: flex;       
+    align-items: center; 
+    justify-content: center; 
+  }
+  
+  .sidebar button.sidebar-btn .icon {
+    margin-right: 8px; 
+    font-size: 1.2em;
+  }
+  
+  .sidebar button.sidebar-btn:hover {
+    background-color: #555;
+  }
+  
+  /* -------- FORMULAIRES -------- */
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-group label {
+    font-weight: bold;
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+  .form-group input[type="text"],
+  .form-group textarea,
+  .form-group input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* Bouton principal de soumission */
+  .submit-btn {
+    background-color: #333;
+    color: #fff;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: flex-start; /* aligné à gauche */
+    margin-top: 16px;
+  }
+  
+  .submit-btn:hover {
+    background-color: #555;
+  }
+  
+  /* -------- DROPZONE -------- */
+  .dropzone {
+    border: 2px dashed #999;
+    border-radius: 4px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 16px;
+    cursor: pointer;
+    color: #666;
+    transition: background-color 0.2s ease;
+  }
+  .dropzone.dragover {
+    background-color: #f0f0f0;
+    border-color: #333;
+    color: #333;
+  }
+  
+  /* -------- GROS BOUTON (page d’accueil) -------- */
+  .big-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 12px 20px;
+    background-color: #333;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .big-button .icon {
+    margin-right: 8px;
+    font-size: 1.2em; /* ajuster la taille de l'icône */
+  }
+  
+  .big-button:hover {
+    background-color: #555;
+  }
+  
+  /* -------- UTILS -------- */
+  .text-center {
+    text-align: center;
+  }
+  
+
+
+
+
+header {
+  position: fixed;
+  z-index: 3000; /* plus grand que sidebar */
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #333;
+  color: #fff;
+  padding: 300px;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; /* si tu veux aligner le menu à gauche et un bouton à droite */
+}
+
+/* Footer */
+footer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: fit-content;
+  padding: 10px 250px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #333;
+  background-color: #fff;
+}
+
+
+.loading-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 6px solid #f3f3f3; /* Couleur de fond */
+  border-top: 6px solid #3498db; /* Couleur du "cercle" tournant */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
