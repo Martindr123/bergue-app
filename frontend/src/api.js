@@ -1,32 +1,36 @@
 // src/api.js
 import axios from 'axios';
 
-// Ajuste si tu veux pointer sur une URL différente 
-// (par exemple un proxy, ou un nom de domaine).
-// En local, si FastAPI tourne sur http://localhost:8000:
-//const BASE_URL = process.env.REACT_APP_API_URL;
-const BASE_URL = "https://sybergueapidev01-dhf9e2bgesfdb3hc.westeurope-01.azurewebsites.net"
-export async function generateDoc({
-  compte_rendu_file,
-  description_missions,
-  montant_provision
-  
-}) {
-  // Construire le FormData pour l'envoi du fichier + champs
+// Ajustez l'URL si besoin, par exemple lisez process.env.REACT_APP_API_URL
+const BASE_URL = "https://sybergueapidev01-dhf9e2bgesfdb3hc.westeurope-01.azurewebsites.net";
+
+// 1) INITIER
+export async function initiateDocGeneration({ compte_rendu_file, description_missions, montant_provision }) {
   const fd = new FormData();
   fd.append('compte_rendu_file', compte_rendu_file);
   fd.append('description_missions', description_missions);
   fd.append('montant_provision', montant_provision);
-  
 
-  // Appeler l'endpoint FastAPI
-  const response = await axios.post(`${BASE_URL}/api/generate-doc`, fd, {
-    responseType: 'blob'
-    // headers: {
-    //   Authorization: `Bearer ${token}`
-    // }
-  });
-
-  // On retourne le blob pour que MissionPage.js puisse le télécharger
+  // POST /initiate -> { job_id: "xxx", status: "started" }
+  const response = await axios.post(`${BASE_URL}/api/generate-doc/initiate`, fd);
   return response.data; 
+}
+
+// 2) VERIFIER STATUT
+export async function checkGenerationStatus(jobId) {
+  // GET /status?job_id=xxx -> { status: "pending"/"done"/"error", error: "..."}
+  const response = await axios.get(`${BASE_URL}/api/generate-doc/status`, {
+    params: { job_id: jobId }
+  });
+  return response.data;
+}
+
+// 3) TELECHARGER
+export async function downloadGeneratedDoc(jobId) {
+  // GET /download?job_id=xxx
+  const response = await axios.get(`${BASE_URL}/api/generate-doc/download`, {
+    params: { job_id: jobId },
+    responseType: 'blob'
+  });
+  return response.data; // blob
 }
