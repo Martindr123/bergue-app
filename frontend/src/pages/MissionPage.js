@@ -21,7 +21,10 @@ function MissionPage() {
   const [jobStatus, setJobStatus] = useState(null); // "pending", "done", "error", null
   const [errorMessage, setErrorMessage] = useState(null);
 
+  // Pour afficher un spinner ou bloquer le bouton
   const [isLoading, setIsLoading] = useState(false);
+
+  // pollingRef => pour arrêter le setInterval
   const pollingRef = useRef(null);
 
   if (!isAuthenticated) {
@@ -41,9 +44,10 @@ function MissionPage() {
     );
   }
 
-  // Fonction de soumission => on initie la génération
+  // Handle form submission => on initie la génération
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("[MissionPage] handleSubmit déclenché");
 
     if (!file) {
       alert('Veuillez sélectionner un fichier (compte rendu de réunion)');
@@ -56,35 +60,42 @@ function MissionPage() {
       setJobStatus(null);
       setErrorMessage(null);
 
-      // 1) INITIER
+      console.log("[MissionPage] Appel à initiateDocGeneration...");
       const result = await initiateDocGeneration({
         compte_rendu_file: file,
         description_missions: descriptionMissions,
-        montant_provision
+        montant_provision : montantProvision
       });
       // result => { job_id: "xxx", status: "started" }
-      setJobId(result.job_id);
-      setJobStatus("pending"); // on sait qu'on vient de lancer
+      console.log("[MissionPage] initiateDocGeneration -> result:", result);
 
-      // 2) Lancer un polling pour checker le statut toutes les 5s
+      setJobId(result.job_id);
+      setJobStatus("pending");
+
+      // Lancer un polling pour checker le statut toutes les 5s
+      console.log("[MissionPage] Lancement du polling setInterval");
       pollingRef.current = setInterval(async () => {
         try {
+          console.log("[MissionPage] Polling du statut pour jobId =", result.job_id);
           const statusData = await checkGenerationStatus(result.job_id);
-          // statusData => { status: "pending"|"done"|"error", error: "..." }
+          console.log("[MissionPage] checkGenerationStatus ->", statusData);
+
           setJobStatus(statusData.status);
 
           if (statusData.status === "done") {
+            console.log("[MissionPage] Job terminé -> on arrête le polling");
             clearInterval(pollingRef.current);
             pollingRef.current = null;
             setIsLoading(false);
           } else if (statusData.status === "error") {
+            console.warn("[MissionPage] Job en erreur:", statusData.error);
             clearInterval(pollingRef.current);
             pollingRef.current = null;
             setIsLoading(false);
             setErrorMessage(statusData.error);
           }
         } catch (pollErr) {
-          console.error("Erreur de polling:", pollErr);
+          console.error("[MissionPage] Erreur lors du polling:", pollErr);
           clearInterval(pollingRef.current);
           pollingRef.current = null;
           setIsLoading(false);
@@ -93,7 +104,7 @@ function MissionPage() {
       }, 5000);
 
     } catch (error) {
-      console.error(error);
+      console.error("[MissionPage] Erreur lors de l'init de génération:", error);
       alert("Erreur lors de l'initialisation de la génération");
       setIsLoading(false);
     }
@@ -103,16 +114,23 @@ function MissionPage() {
   useEffect(() => {
     return () => {
       if (pollingRef.current) {
+        console.log("[MissionPage] Nettoyage du setInterval");
         clearInterval(pollingRef.current);
       }
     };
   }, []);
 
-  // Fonction de téléchargement quand le job est "done"
+  // Téléchargement quand le job est "done"
   const handleDownload = async () => {
-    if (!jobId) return;
+    console.log("[MissionPage] handleDownload déclenché pour jobId:", jobId);
+    if (!jobId) {
+      console.warn("[MissionPage] Pas de jobId, téléchargement impossible.");
+      return;
+    }
     try {
       const blob = await downloadGeneratedDoc(jobId);
+      console.log("[MissionPage] Blob récupéré, on force le téléchargement...");
+
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -122,7 +140,7 @@ function MissionPage() {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error(err);
+      console.error("[MissionPage] Erreur lors du téléchargement:", err);
       alert("Erreur lors du téléchargement du document");
     }
   };
@@ -147,6 +165,7 @@ function MissionPage() {
                   e.preventDefault();
                   const droppedFile = e.dataTransfer.files[0];
                   setFile(droppedFile);
+                  console.log("[MissionPage] Fichier déposé via onDrop:", droppedFile);
                 }}
               >
                 {file
@@ -160,6 +179,7 @@ function MissionPage() {
                 onChange={(e) => {
                   if (e.target.files.length > 0) {
                     setFile(e.target.files[0]);
+                    console.log("[MissionPage] Fichier sélectionné via input:", e.target.files[0]);
                   }
                 }}
                 accept=".txt,.doc,.docx,.pdf"
