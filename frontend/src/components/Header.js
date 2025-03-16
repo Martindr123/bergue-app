@@ -7,7 +7,7 @@ const Header = ({ isSidebarOpen, toggleSidebar }) => {
   const { logout } = useAuth0();
 
   const handleLogout = () => {
-    logout({ returnTo: process.env.REACT_APP_API_URL });
+    logout({ returnTo: "https://sybergueapidev01-dhf9e2bgesfdb3hc.westeurope-01.azurewebsites.net" });
   };
 
   return (
